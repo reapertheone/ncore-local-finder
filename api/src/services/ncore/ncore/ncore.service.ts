@@ -1,4 +1,3 @@
-import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import {
@@ -9,6 +8,8 @@ import {
   torrentCategory,
   torrentOrderBy,
 } from 'src/types/NCore';
+import { JSDOM } from 'jsdom';
+import { UtilitiesService } from 'src/services/utilities/utilities/utilities.service';
 
 @Injectable()
 export class NcoreService {
@@ -16,9 +17,8 @@ export class NcoreService {
   private refreshInterval = 3600000;
   constructor(
     @Inject('NCORE_CREDENTIALS') private ncoreAuth: NCoreCredentials,
-    private http: HttpService,
+    private util: UtilitiesService,
   ) {}
-  private login() {}
 
   @Cron(CronExpression.EVERY_30_MINUTES)
   public async getCookies(): Promise<void> {
@@ -38,10 +38,14 @@ export class NcoreService {
     this.cookies = res.headers.getSetCookie().join('; ');
   }
 
-  public async getTorrents(
-    params: Partial<ITorrentSearchParams> = {
-      [SearchParams.orderBy]: torrentOrderBy.seeders,
-      [SearchParams.order]: 'DESC',
+  public async getTorrents(params?: Partial<ITorrentSearchParams>) {
+    if (!this.cookies) {
+      await this.getCookies();
+    }
+
+    const searchParams: Partial<ITorrentSearchParams> = {
+      [SearchParams.orderBy]: torrentOrderBy.downloadSize,
+      [SearchParams.order]: 'ASC',
       [SearchParams.page]: 1,
       [SearchParams.searchCategories]: [
         torrentCategory.xvidHun,
@@ -53,31 +57,27 @@ export class NcoreService {
         torrentCategory.hd,
         torrentCategory.hdHun,
       ],
-    },
-  ) {
-    if (!this.cookies) {
-      await this.getCookies();
-    }
+      ...params,
+    };
 
     try {
-      return await this.torrentRequest(params);
+      return (await this.torrentRequest(searchParams)).results;
     } catch {
       await this.getCookies();
-      return await this.torrentRequest(params);
+      return (await this.torrentRequest(searchParams)).results;
     }
-
-    // the API returns HTML if there are no results
   }
 
   private async torrentRequest(
     params: Partial<ITorrentSearchParams>,
   ): Promise<TorrentSearchResult> {
-    const url = `${this.ncoreAuth.mainUrl}/torrents.php?jsons=true${this.parseQueryParams(params)}`;
+    const url = `${this.ncoreAuth.mainUrl}/torrents.php?jsons=true${this.util.parseQueryParams(params)}`;
     const request = await fetch(url, {
       headers: {
         cookie: this.cookies,
       },
     });
+    // the API returns HTML if there are no results
     if (request.headers.get('content-type')?.includes('application/json')) {
       return await request.json();
     }
@@ -89,34 +89,26 @@ export class NcoreService {
     };
   }
 
-  private parseQueryParams(params: Partial<ITorrentSearchParams>): string {
-    const keys = Object.keys(params);
-    let query: string = '';
-
-    keys.forEach((key) => {
-      query += this.parseQueryParam(
-        key as keyof Partial<ITorrentSearchParams>,
-        params,
-      );
-    });
-
-    return query;
-  }
-
-  private parseQueryParam(
-    key: keyof Partial<ITorrentSearchParams>,
-    params: Partial<ITorrentSearchParams>,
-  ): string {
-    let query = '';
-    if (params[key]) {
-      const value = params[key];
-      if (!Array.isArray(value)) {
-        query += `&${key}=${value}`;
-        return query;
-      }
-      query += `&${value.join(',')}`;
+  public async getHitNRunList() {
+    if (!this.cookies) {
+      await this.getCookies();
     }
+    const request = await fetch(
+      `${this.ncoreAuth.mainUrl}/hitnrun.php?showall=true`,
+      {
+        headers: { cookies: this.cookies },
+      },
+    );
+    const html = await request.text();
+    const { document } = new JSDOM(html).window;
 
-    return query;
+    const rows = Array.from(
+      document.querySelectorAll('.hnr_all, .hnr_all2'),
+    ) as HTMLElement[];
+    const deletableRows = rows.filter(
+      (row) => row.querySelector('.hnr_ttimespent')?.textContent === '-',
+    );
+
+    return deletableRows;
   }
 }

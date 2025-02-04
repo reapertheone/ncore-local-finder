@@ -1,21 +1,17 @@
-import { Controller, Get } from '@nestjs/common';
-import { NcoreService } from 'src/services/ncore/ncore/ncore.service';
-import { TmdbService } from 'src/services/tmdb/tmdb/tmdb.service';
+import { Controller, Get, Param, Query } from '@nestjs/common';
+import { MovieService } from 'src/services/movie/movie/movie.service';
 
 @Controller('api/movie')
 export class MovieController {
-  constructor(
-    private tmdb: TmdbService,
-    private ncore: NcoreService,
-  ) {}
+  constructor(private movie: MovieService) {}
 
   @Get()
-  public async getMovies(): Promise<any> {
-    return await this.ncore.getTorrents();
+  public async getMovies(@Query('page') page: number): Promise<any> {
+    return await this.movie.getMovies(page);
   }
 
-  @Get(':imdbId')
-  public getMovie(imdbId: string) {
-    throw new Error(`not implemented id: ${imdbId}`);
+  @Get(':id')
+  public async getMovie(@Param('id') id: number) {
+    return await this.movie.getDetails(id);
   }
 }
