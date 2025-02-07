@@ -1,0 +1,6 @@
+<div *ngFor="let movie of (movies | async)">
+  <p>{{movie.title}}</p>
+</div>
+<div>
+  <a [routerLink]="'/'" (click)="pageIncrease()">Load More</a>
+</div>

@@ -27,7 +27,7 @@ export class TmdbService {
         poster_path: `${this.tmdbConfig.POSTER_URL}/original${x.poster_path}`,
         backdrop_path: `${this.tmdbConfig.POSTER_URL}/original${x.backdrop_path}`,
       };
-    });
+    }) as DiscoverResults['results'];
   }
 
   public async getByImdbId(id: string) {

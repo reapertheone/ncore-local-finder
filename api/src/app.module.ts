@@ -8,9 +8,20 @@ import { HttpModule } from '@nestjs/axios';
 import { MovieService } from './services/movie/movie/movie.service';
 import { TMDBConfig } from './types/tmdb';
 import { UtilitiesService } from './services/utilities/utilities/utilities.service';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
+const publicPath = join(__dirname, '../public/browser');
+console.log(publicPath);
 @Module({
-  imports: [ConfigModule.forRoot(), HttpModule],
+  imports: [
+    ConfigModule.forRoot(),
+    HttpModule,
+    ServeStaticModule.forRoot({
+      rootPath: publicPath,
+      renderPath: '/',
+    }),
+  ],
   controllers: [MovieController],
   providers: [
     NcoreService,
