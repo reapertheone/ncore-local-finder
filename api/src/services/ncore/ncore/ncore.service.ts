@@ -44,8 +44,8 @@ export class NcoreService {
     }
 
     const searchParams: Partial<ITorrentSearchParams> = {
-      [SearchParams.orderBy]: torrentOrderBy.downloadSize,
-      [SearchParams.order]: 'ASC',
+      [SearchParams.orderBy]: torrentOrderBy.seeders,
+      [SearchParams.order]: 'DESC',
       [SearchParams.page]: 1,
       [SearchParams.searchCategories]: [
         torrentCategory.xvidHun,
