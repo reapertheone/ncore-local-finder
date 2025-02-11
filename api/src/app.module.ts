@@ -19,7 +19,7 @@ console.log(publicPath);
     HttpModule,
     ServeStaticModule.forRoot({
       rootPath: publicPath,
-      renderPath: '/',
+      renderPath: '*',
     }),
   ],
   controllers: [MovieController],

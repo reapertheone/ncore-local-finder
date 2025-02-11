@@ -24,8 +24,8 @@ export class TmdbService {
     return ((await res.json()) as DiscoverResults).results.map((x) => {
       return {
         ...x,
-        poster_path: `${this.tmdbConfig.POSTER_URL}/original${x.poster_path}`,
-        backdrop_path: `${this.tmdbConfig.POSTER_URL}/original${x.backdrop_path}`,
+        poster_path: this.getFullImageUrl(x.poster_path),
+        backdrop_path: this.getFullImageUrl(x.backdrop_path),
       };
     }) as DiscoverResults['results'];
   }
@@ -57,6 +57,6 @@ export class TmdbService {
   }
 
   private getFullImageUrl(url: string): string {
-    return `${this.tmdbConfig.POSTER_URL}/original${url}`;
+    return `${this.tmdbConfig.POSTER_URL}/w300${url}`;
   }
 }

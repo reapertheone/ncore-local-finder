@@ -1,6 +1,6 @@
-<div *ngFor="let movie of (movies | async)">
-  <p>{{movie.title}}</p>
+<div class="list">
+  <app-card *ngFor="let movie of (movies | async)" [movie]="movie"></app-card>
 </div>
 <div>
-  <a [routerLink]="'/'" (click)="pageIncrease()">Load More</a>
+  <a [routerLink]="'/movie'" [queryParams]="{page:pageNumber+1}">Load More</a>
 </div>
