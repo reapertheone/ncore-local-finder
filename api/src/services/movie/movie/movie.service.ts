@@ -12,7 +12,8 @@ export class MovieService {
   ) {}
 
   public async getMovies(page: number) {
-    return this.tmdb.discover('movie', { page });
+    const movies = await this.tmdb.discover('movie', { page });
+    return movies;
   }
 
   public async getDetails(id: number) {
@@ -23,5 +24,9 @@ export class MovieService {
     };
     const torrents = await this.ncore.getTorrents(torrentSearchParams);
     return { ...details, torrents } as MovieDetailsDto;
+  }
+
+  public async search(titleFragment: string) {
+    return this.tmdb.search(titleFragment);
   }
 }

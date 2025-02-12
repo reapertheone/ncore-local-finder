@@ -3,9 +3,11 @@ import { UtilitiesService } from 'src/services/utilities/utilities/utilities.ser
 import {
   DiscoverResults,
   MovieDetails,
-  SearchResult,
+  FindResults,
   TMDBConfig,
   TMDBSearchParams,
+  SearchResults,
+  MovieResult,
 } from 'src/types/tmdb';
 
 @Injectable()
@@ -37,7 +39,7 @@ export class TmdbService {
         accept: 'application/json',
       },
     });
-    const jsonRes = (await res.json()) as SearchResult;
+    const jsonRes = (await res.json()) as FindResults;
     const haveResult = jsonRes.movie_results.length > 0;
     if (haveResult) {
       return jsonRes.movie_results[0];
@@ -54,6 +56,19 @@ export class TmdbService {
       backdrop_path: this.getFullImageUrl(details.backdrop_path),
       poster_path: this.getFullImageUrl(details.poster_path),
     } as MovieDetails;
+  }
+
+  public async search(titleFragment: string, what: 'movie' | 'tv' = 'movie') {
+    const url = `${this.tmdbConfig.URL}/${this.tmdbConfig.VERSION}/search/${what}?api_key=${this.tmdbConfig.API_KEY}&query=${titleFragment}&language=en-US&page=1`;
+    const res = await fetch(url);
+    const json = (await res.json()) as SearchResults;
+    return json.results.map((movie) => {
+      return {
+        ...movie,
+        poster_path: this.getFullImageUrl(movie.poster_path),
+        backdrop_path: this.getFullImageUrl(movie.backdrop_path),
+      } as MovieResult;
+    });
   }
 
   private getFullImageUrl(url: string): string {

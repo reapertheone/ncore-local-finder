@@ -34,10 +34,10 @@ export interface MovieResult {
   first_air_date: string;
   genre_ids: number[];
   id: number;
-  name: string;
+  title: string;
   origin_country: string[];
   original_language: string;
-  original_name: string;
+  original_title: string;
   overview: string;
   popularity: number;
   poster_path: string;
@@ -52,12 +52,19 @@ export interface DiscoverResults {
   total_results: number;
 }
 
-export interface SearchResult {
+export interface FindResults {
   movie_results: MovieResult[];
   person_results: any[];
   tv_results: any[];
   tv_episode_results: any[];
   tv_season_results: any[];
+}
+
+export interface SearchResults {
+  page: number;
+  results: MovieResult[];
+  total_page: number;
+  total_results: number;
 }
 
 export interface MovieDetails {

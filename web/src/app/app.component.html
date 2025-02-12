@@ -1,13 +1,16 @@
 <header class="navigation">
   <div>
-    <a [routerLink]="'/movie'" (click)="navigate('/movie')">
+    <a [routerLink]="'/movie'" (click)="setSearchType('movie')">
       Movies
     </a>
   </div>
   <div>
-    <a [routerLink]="'/tv'" (click)="navigate('/tv')" >
+    <a [routerLink]="'/tv'" (click)="setSearchType('tv')" >
       Series
     </a>
+  </div>
+  <div *ngIf="searchType!==null">
+    <app-search [searchType]="searchType"></app-search>
   </div>
 </header>
 <router-outlet class="centered" />

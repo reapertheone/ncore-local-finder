@@ -10,6 +10,10 @@ export class MovieController {
     return await this.movie.getMovies(page);
   }
 
+  @Get('search')
+  public async search(@Query('search') searchParam: string) {
+    return await this.movie.search(searchParam);
+  }
   @Get(':id')
   public async getMovie(@Param('id') id: number) {
     return await this.movie.getDetails(id);

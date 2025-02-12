@@ -27,7 +27,6 @@ public movies:Observable<MovieResult[]>=new Observable<MovieResult[]>()
     this.movies=this.activated.queryParams.pipe(switchMap(params=>{
       const page=params['page']||'1'
       this.pageNumber=Number.parseInt(page)
-      console.log(this.pageNumber)
       return this.getMovies(page)
     }))
 
