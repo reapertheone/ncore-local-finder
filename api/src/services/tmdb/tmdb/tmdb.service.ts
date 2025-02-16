@@ -58,8 +58,8 @@ export class TmdbService {
     } as MovieDetails;
   }
 
-  public async search(titleFragment: string, what: 'movie' | 'tv' = 'movie') {
-    const url = `${this.tmdbConfig.URL}/${this.tmdbConfig.VERSION}/search/${what}?api_key=${this.tmdbConfig.API_KEY}&query=${titleFragment}&language=en-US&page=1`;
+  public async search(titleFragment: string) {
+    const url = `${this.tmdbConfig.URL}/${this.tmdbConfig.VERSION}/search/multi?api_key=${this.tmdbConfig.API_KEY}&query=${titleFragment}&language=en-US&page=1`;
     const res = await fetch(url);
     const json = (await res.json()) as SearchResults;
     return json.results.map((movie) => {

@@ -1,1 +1,2 @@
-<p>detail works!</p>
+<p *ngIf="details | async">{{details | async | json}}</p>
+<p *ngIf="!(details | async)">no item</p>

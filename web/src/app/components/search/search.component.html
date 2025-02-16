@@ -1,3 +1,10 @@
 <div>
   <input type="text" (keyup)="onKeyUp($event)" />
+  <div class="search-results">
+    <div *ngFor="let result of (searchResult|async)">
+      <a [routerLink]="result.media_type+'/'+result.id">
+        {{result.title}}({{result.original_title}})
+      </a>
+    </div>
+  </div>
 </div>
